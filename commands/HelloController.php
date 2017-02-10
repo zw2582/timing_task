@@ -5,6 +5,11 @@ use yii\console\Controller;
 use app\models\Task;
 use app\tools\StringTool;
 
+/**
+ * linux定时器定时运行的入库
+ * @author zhouwei<wei.w.zhou@integle.com>
+ * @copyright 2017年2月10日 下午5:13:35
+ */
 class HelloController extends Controller
 {
 	const wait = 1;
@@ -16,6 +21,9 @@ class HelloController extends Controller
 	const maxVersion = 5;
 	
     public function actionIndex() {
+        /**
+         * 1.获取需要执行或者需要检测的任务
+         */
     	$inCount = Task::find()->where(['task_status' => self::ing, 'status' => 1])->count();
     	if ($inCount < $this->maxThread){
     		$task = Task::find()->where(['task_status' => [self::wait,self::ing], 'status'=>1])->orderBy('version ASC')->one();
@@ -24,10 +32,16 @@ class HelloController extends Controller
     	}
     	
     	if (empty($task)){
+    	    \Yii::trace('暂时没有任务执行，退出本次请求', __METHOD__);
     		$this->stdout('no task to exec');
     		return true;
     	}
 
+    	/**
+    	 * 2.判断该任务是需要执行，还是在执行中，
+    	 * 如果再执行中，需要去检测执行是否已经终止，如果没有执行则生成进程号去执行该任务
+    	 * 进程号的目的是用于避免多进程冲突
+    	 */
     	$thread_no = '';
     	if ($task->task_status == self::wait){
     	    if ($task->version < 127) {
@@ -52,6 +66,9 @@ class HelloController extends Controller
     	    return false;
     	}
 
+    	/**
+    	 * 3.根据任务类型找到任务执行路径，并运行返回执行结果
+    	 */
     	$result = $this->run(\Yii::$app->params['exec_path'][$task->type_id]);
 
     	if (in_array($result, array(self::comple, self::wait, self::interrupt))){

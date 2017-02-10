@@ -11,9 +11,6 @@ use app\models\SPackageUnit;
  */
 class BiologyController extends CsvController {
     
-    //public $keys = ['number','cas','ics','brand','cn_name','en_name','description','website',
-//        'purity','package_count','package_unit_id','price','inventory_status','stock_time',
-//        'delivery_time','promotion'];
     public $keys = ['number','brand','cn_name','en_name','description','website','package','tstg',
         'price','inventory_status','stock_time','promotion','promotion_tag'];
     
@@ -27,6 +24,11 @@ class BiologyController extends CsvController {
     
     public $en_units;
     
+    /**
+     * 在读取文件之间执行的方法
+     * {@inheritDoc}
+     * @see \app\modules\supplier_v1\core\CsvController::beforeRun()
+     */
     public function beforeRun() {
         $this->userId = $this->mission->user_id;
         $this->supplierId = $this->mission->supplier_id;
@@ -37,7 +39,7 @@ class BiologyController extends CsvController {
     }
     
     /**
-     * (non-PHPdoc)
+     * 每次读取一行执行的方法
      * @see \app\modules\supplier_v1\core\CsvController::fetCall()
      */
     public function fetCall($data) {        

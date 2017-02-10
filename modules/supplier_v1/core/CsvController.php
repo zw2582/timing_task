@@ -7,7 +7,7 @@ use app\commands\HelloController;
 use app\models\SMissionError;
 use app\models\Task;
 /**
- * 
+ * 用于解析csv文件
  * @author zhouwei<wei.w.zhou@integle.com>
  * @copyright 2016-6-24 下午3:13:13
  */
